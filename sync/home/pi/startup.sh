@@ -69,11 +69,11 @@ IP="" CLIENT_SSID="PengMi" CLIENT_PASSWORD="<PASSWORD>" /home/pi/snippits/wifi_c
 #-D nl80211,wext
 
 # Hotspot
-#HOTSPOT_USENAT=1 HOTSPOT_SSID=Blau HOTSPOT_DEV=wlan0 bash /home/pi/snippits/wifi_hotspot.sh
+#HOTSPOT_USENAT=1 HOTSPOT_SSID=Blau HOTSPOT_DEV=wlan0 bash /home/pi/snippits/wifi_hotspot.sh &
 # Hotspot on second wlan
-#HOTSPOT_USENAT=1 HOTSPOT_SSID=Blau HOTSPOT_DEV=wlan1 bash /home/pi/snippits/wifi_hotspot.sh
+#HOTSPOT_USENAT=1 HOTSPOT_SSID=Blau HOTSPOT_DEV=wlan1 bash /home/pi/snippits/wifi_hotspot.sh &
 # Debugging
-#DEBUG=1 HOTSPOT_USENAT=1 HOTSPOT_SSID=Blau  HOTSPOT_DEV=wlan1 bash /home/pi/snippits/wifi_hotspot.sh
+#DEBUG=1 HOTSPOT_USENAT=1 HOTSPOT_SSID=Blau  HOTSPOT_DEV=wlan1 bash /home/pi/snippits/wifi_hotspot.sh &
 
 ### Following method can be used to claim a primary IP if other device not already claiming it
 # echo "## startup.sh: Try To claim ${MAIN_IP}"

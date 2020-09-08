@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # wait 120 seconds and then turn off
-echo "### leds_off.sh (in 120 seconds)"
+echo "### leds_off.sh (every 120 seconds)"
 # actually it appears somewhere else some other process may re-enable so lets put in a loop
 # lord have mercy on us
 while [ 1 ]; do
