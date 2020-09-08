@@ -1,29 +1,28 @@
 #!/usr/bin/env bash
-# turn off systemd naming and..
-# Assign "wlan0" to specific mac addr
-#
-# run interactively preffered rather than on boot
+# turn off systemd naming and.
+# Assign "wlan0" to specific mac addr or port location
+# currently configured to assume "wlan0" as internal wlan
+# and any usb attached card to be "wlan1"
 #
 # https://www.raspberrypi.org/forums/viewtopic.php?p=1240395&sid=72d90edf6478b3ce30cc87738dd04626#p1240395
 #
-# if using external wlan as well as internal they can randomly swap
-# wlan0 and wlan1. Very frustrating. To resovle set them based on
-# mac.
-
-#
-# Defined here are different methods to anchor names. check at bottom of
-# script for which one is currently used
 
 
 function set_udev () {
   # turn off systemd style naming:
   ln -nfs /dev/null /etc/systemd/network/99-default.link
 
-  test ! -e /etc/udev/rules.d/72-wlan.rules \
-  && echo "$usbwlan1only" > /etc/udev/rules.d/72-wlan.rules \
+  test ! -e /etc/udev/rules.d/72-wlan.rules && \
+  \
+  echo "$usbwlan1only" > /etc/udev/rules.d/72-wlan.rules \
+  \
   && udevadm control --reload-rules && udevadm trigger --attr-match=subsystem=net
 
 }
+
+
+#
+# Defined here are different methods to anchor names.
 
 wlanbymac=$(cat <<EOM
 # CHANGE THESE IF YOU USE MACADDR BASED
