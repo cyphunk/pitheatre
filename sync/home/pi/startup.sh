@@ -31,7 +31,7 @@ touch /home/pi/startup.sh.worked
 # Log to file and stdout
 # cleanup old logfiles. keep first 10
 ls -t startup_*.log | tail --lines=+10 | xargs rm
-exec > >(tee -a -i $(dirname $(readlink -f $0))/startup_`date +%Y%m%d`.log)
+exec 2>&1 > >(tee -a -i $(dirname $(readlink -f $0))/startup_`date +%Y%m%d`.log)
 
 # often used in my projects, a configuration.sh
 if [ -e $(dirname $(readlink -f $0))/configuration.sh ]; then
@@ -57,10 +57,12 @@ ifconfig eth0:1 10.0.0.1 &
 ping -c 60 -i 2 -w 2 10.0.0.2 &
 
 # Wifi (set IP for static, else dhcp is assumed)
-# NOTE: system dhcpcd calls wpa. 
-#   debug: jounalctl -f -u dhcpcd; systemctl restart dhcpcd
-#   to have it not start wlan add to dhcpcd.conf `denyinterfaces wlan0`
-echo "## startup.sh: WIFI"
+# NOTE: system dhcpcd calls wpa. debug: jounalctl -f -u dhcpcd; systemctl restart dhcpcd
+# to disable that:
+echo "## startup.sh: WIFI - Disable dhcpcd calling wpa_supplicatn"
+grep -q  "nohook wpa_supplicant" /etc/dhcpcd.conf \
+|| (echo "nohook wpa_supplicant" >> /etc/dhcpcd.conf && systemctl restart dhcpcd)
+echo "## startup.sh: WIFI - start wifi_client.sh"
 #IP="" CLIENT_SSID="<SSID>" CLIENT_PASSWORD="<PASSWORD>" /home/pi/snippits/wifi_client.sh &
 #IP="" CLIENT_SSID="Bsein" CLIENT_PASSWORD=`cat /home/pi/wifipass` /home/pi/snippits/wifi_client.sh &
 IP="" CLIENT_SSID="PengMi" CLIENT_PASSWORD="<PASSWORD>" /home/pi/snippits/wifi_client.sh &

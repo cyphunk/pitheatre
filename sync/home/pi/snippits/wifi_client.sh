@@ -20,6 +20,15 @@ done
 blink
 
 killall wpa_supplicant
+# For issues with wpa_supplicant being started by system without request
+#grep -q "nohook wpa_supplicant" /etc/dhcpcd.conf \
+#|| (echo "nohook wpa_supplicant" >> /etc/dhcpcd.conf && systemctl restart dhcpcd)
+# check dhcpcd.conf, add either `denyinterfaces wlan0` which will 
+# no longer send dhcp requests on the interface, or
+# add `interface wlan0\nnohook wpa_supplicant` which will avoid calling
+# wpa_sup on that interface
+# TODO: Editing central files is ugly. Find a better way
+
 
 cat <<EOF > /etc/wpa_supplicant/wpa_supplicant-client.conf
 country=GB
@@ -43,8 +52,8 @@ sleep 2
 if [[ "x$IP" != "x" ]]; then
     ifconfig wlan0 $IP netmask 255.255.255.0 || exit
 else
-    echo "### wifi_client.sh: No IP set. Assume DHCP is in use?"
-    /bin/ps aux | grep dhcp
+    echo "### wifi_client.sh: No IP set. Assume DHCP is in use? Process list:"
+    /bin/ps aux | grep dhcp | grep -v grep
 fi
 
 echo "### wifi_client.sh: Wifi startup done"
