@@ -1,0 +1,18 @@
+[Unit]
+Description=Fking systemd starts rc.local early so we do user startu.sh instead
+ConditionPathExists=/home/pi/startup.sh
+
+[Service]
+Type=forking
+ExecStart=/home/pi/startup.sh start
+TimeoutSec=0
+StandardOutput=tty
+RemainAfterExit=yes
+SysVStartPriority=99
+# LOG OUTPUT:
+StandardOutput=syslog+console
+StandardError=syslog+console
+
+[Install]
+WantedBy=multi-user.target
+

@@ -1,0 +1,12 @@
+sync/root/.ssh/*
+sync/home/pi/.ssh/*
+sync/home/pi/configuration.sh
+sync/home/pi/wifipass
+sync/home/pi/packages/*
+.vscode-upload.json
+*.zip
+*.img
+*.xz
+Packages_*
+Packages
+tests/
