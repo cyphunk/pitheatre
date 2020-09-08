@@ -1,5 +1,5 @@
 #!/bin/bash
-# Fcking systemd calls rc.local very early
+# systemd calls rc.local very early
 # so we added this to system d at end
 # ./systemd/system/userstartup.service
 # it is called as ROOT user
@@ -63,8 +63,7 @@ ping -c 60 -i 2 -w 2 10.0.0.2 &
 echo "## startup.sh: WIFI"
 #IP="" CLIENT_SSID="<SSID>" CLIENT_PASSWORD="<PASSWORD>" /home/pi/snippits/wifi_client.sh &
 #IP="" CLIENT_SSID="Bsein" CLIENT_PASSWORD=`cat /home/pi/wifipass` /home/pi/snippits/wifi_client.sh &
-#IP="" CLIENT_SSID="PengMi" CLIENT_PASSWORD="jahacuckoo" /home/pi/snippits/wifi_client.sh &
-IP="" CLIENT_SSID="BASSOSTUDIO" CLIENT_PASSWORD="bassointernet" /home/pi/snippits/wifi_client.sh &
+IP="" CLIENT_SSID="PengMi" CLIENT_PASSWORD="<PASSWORD>" /home/pi/snippits/wifi_client.sh &
 #-D nl80211,wext
 
 # Hotspot
