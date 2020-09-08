@@ -1,2 +1,12 @@
 # Often use this script which is sourced in startup.sh to configure
 # project specific things such as wifi ssid and passwords
+#
+# To have startup.sh load this configuration define the 
+# values and rename it to 'configuration.sh'
+
+
+IP=192.168.5.5
+CLIENT_SSID=<CHANGEME>
+CLIENT_PASSWORD=<CHANGEME>
+# Go into startup.sh and examine how above values are used or
+# if they are redefined.
