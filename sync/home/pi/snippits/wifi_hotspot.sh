@@ -68,6 +68,7 @@ EOF
 
 ps ax | grep hostapd | grep -v grep
 killall hostapd && sleep 1
+test -e "/home/pi/`basename $0`_hostapd.log" && rm "/home/pi/`basename $0`_hostapd.log"
 hostapd -B \
   -P /var/run/hostapd.pid \
   -f /home/pi/`basename $0`_hostapd.log \
@@ -110,6 +111,7 @@ ps ax | grep dnsmasq | grep -v grep
 killall dnsmasq && sleep 1
 test "$HOTSPOT_FORCEHTTP" = "1" && FORCE_DNS_PARAM=--address="/#/${HOTSPOT_IP}"
 
+test -e "/home/pi/`basename $0`_dnsmasq.log" && rm "/home/pi/`basename $0`_dnsmasq.log"
 dnsmasq \
 --interface=${HOTSPOT_DEV} \
 --dhcp-range=${NETPREFIX}.40,${NETPREFIX}.250,255.255.255.0,24h \
