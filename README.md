@@ -1,4 +1,4 @@
-# Pi Theatre
+# Raspberry Pi in Theatre
 
 After using the Raspberry Pi for many years to develop prototypes for use in performance and theatre projects I've come to extensively depend on these custom snippits and RPi image creation tools. They should work on Linux or OSX to create RPi SD card images. Of interest most is probably the `startup.sh` script and the various `snippet` scripts found in the `home/pi` directory. The scripts are written to place control and configuration within one central location rather than editing files all across the system. For example the wifi is configured by `startup.sh` and within that single script rather than pointing users to where to effect the wifi configuration on the system files.
 
