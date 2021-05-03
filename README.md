@@ -11,4 +11,7 @@ These tools were developed over time and while using them in Johannes Paul Raeth
 * If you want your ssh keys copied over when the OS image is dd'ed to the SD card you might include those in the `home/pi/.ssh` directory and `root/.ssh` directory already
 * run `make_image.sh`
 
-Optionally you can try to pre-download packages you will need for your project using the `download_packages.sh`. Review the script for use instructions.
+Optionally:
+* `emulate_image.sh` to run image in emulator
+* `download_packages.sh` to pre-download packages your project needs to the target. Useful if internet not available on target Raspberry Pi. Review the script for use instructions.
+

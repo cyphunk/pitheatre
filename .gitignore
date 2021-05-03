@@ -10,3 +10,7 @@ sync/home/pi/packages/*
 Packages_*
 Packages
 tests/
+fifo.out
+fifo.in
+.fifo.out.tmp
+.foundlogin
