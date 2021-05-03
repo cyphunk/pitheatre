@@ -56,12 +56,14 @@ ifconfig eth0:1 10.0.0.1 &
 # ping something for 2 minutes so engineer can find the ip by networking sniffing
 ping -c 60 -i 2 -w 2 10.0.0.2 &
 
-# Wifi (set IP for static, else dhcp is assumed)
+echo "## startup.sh: WIFI - make internal 'wlan0' and dongle 'wlan1'"
+bash /home/pi/snippits/wlan_name.sh &
 # NOTE: system dhcpcd calls wpa. debug: jounalctl -f -u dhcpcd; systemctl restart dhcpcd
 # to disable that:
 echo "## startup.sh: WIFI - Disable dhcpcd calling wpa_supplicatn"
 grep -q  "nohook wpa_supplicant" /etc/dhcpcd.conf \
 || (echo "nohook wpa_supplicant" >> /etc/dhcpcd.conf && systemctl restart dhcpcd)
+# Wifi (set $IP for static, else dhcp is assumed)
 echo "## startup.sh: WIFI - start wifi_client.sh"
 #IP="" CLIENT_SSID="<SSID>" CLIENT_PASSWORD="<PASSWORD>" /home/pi/snippits/wifi_client.sh &
 #IP="" CLIENT_SSID="Bsein" CLIENT_PASSWORD=`cat /home/pi/wifipass` /home/pi/snippits/wifi_client.sh &
@@ -74,6 +76,27 @@ IP="" CLIENT_SSID="PengMi" CLIENT_PASSWORD="<PASSWORD>" /home/pi/snippits/wifi_c
 #HOTSPOT_USENAT=1 HOTSPOT_SSID=Blau HOTSPOT_DEV=wlan1 bash /home/pi/snippits/wifi_hotspot.sh &
 # Debugging
 #DEBUG=1 HOTSPOT_USENAT=1 HOTSPOT_SSID=Blau  HOTSPOT_DEV=wlan1 bash /home/pi/snippits/wifi_hotspot.sh &
+export HOTSPOT_IP=${HOTSPOT_IP:-192.168.21.1}    # Set IP of this router and network/24 for client ips
+export HOTSPOT_SSID=${HOTSPOT_SSID:-Blau}        # Set SSID for hotspot
+export HOTSPOT_DEV=${HOTSPOT_DEV:-wlan1}         # Set device to attach it to
+export HOTSPOT_USENAT=${HOTSPOT_USENAT:-1}       # Use NAT to route clients out
+export HOTSPOT_FORCEHTTP=${HOTSPOT_FORCEHTTP:-1} # Force http to localhost:80
+export HOTSPOT_FORCEDNS=${HOTSPOT_FORCEDNS:-0}   # Force always return our IP to all dns requests
+# some project specific parameters
+#export HOTSPOT_DNSMASQ_PARAMS=${HOTSPOT_DNSMASQ_PARAMS:-"--address=/ptxx.cc/$HOTSPOT_IP"} 
+HOTSPOT_DNSMASQ_PARAMS=${HOTSPOT_DNSMASQ_PARAMS:-"--address=/ptxx.cc/$HOTSPOT_IP"} 
+HOTSPOT_DNSMASQ_PARAMS="${HOTSPOT_DNSMASQ_PARAMS} --address=/hotspot.localnet/$HOTSPOT_IP"
+HOTSPOT_DNSMASQ_PARAMS="${HOTSPOT_DNSMASQ_PARAMS} --address=/connectivitycheck.gstatic.com/216.58.206.131"
+HOTSPOT_DNSMASQ_PARAMS="${HOTSPOT_DNSMASQ_PARAMS} --address=/www.gstatic.com/216.58.206.99"
+HOTSPOT_DNSMASQ_PARAMS="${HOTSPOT_DNSMASQ_PARAMS} --address=/www.apple.com/2.16.21.112"
+HOTSPOT_DNSMASQ_PARAMS="${HOTSPOT_DNSMASQ_PARAMS} --address=/captive.apple.com/17.253.35.204"
+HOTSPOT_DNSMASQ_PARAMS="${HOTSPOT_DNSMASQ_PARAMS} --address=/clients3.google.com/216.58.204.46"
+HOTSPOT_DNSMASQ_PARAMS="${HOTSPOT_DNSMASQ_PARAMS} --address=/www.msftconnecttest.com/13.107.4.52"
+export HOTSPOT_DNSMASQ_PARAMS 
+#DEBUG=1 bash /home/pi/snippits/wifi_hotspot.sh &
+# Try without any interception, just plain intranet
+DEBUG=1 HOTSPOT_USENAT=0 HOTSPOT_FORCEDNS=0 HOTSPOT_FORCEHTTP=0 HOTSPOT_SSID=Schwartz  HOTSPOT_DEV=wlan1 bash /home/pi/snippits/wifi_hotspot.sh
+
 
 ### Following method can be used to claim a primary IP if other device not already claiming it
 # echo "## startup.sh: Try To claim ${MAIN_IP}"

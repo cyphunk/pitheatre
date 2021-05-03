@@ -14,11 +14,15 @@ echo "### `basename $0`: begin"
     # If NAT set to 1 = NAT hotspot clients
     # makes sense if have another upstream network
     HOTSPOT_USENAT=${HOTSPOT_USENAT:-0}
-    # IPTABLE rule to force http requests to localhost
+    # IPTABLE rule to force http requests to localhost:80
  HOTSPOT_FORCEHTTP=${HOTSPOT_FORCEHTTP:-0}
+    # dnsmasq resolv all request to localhost
+  HOTSPOT_FORCEDNS=${HOTSPOT_FORCEDNS:-0}
 #   HOTSPOT_DRIVER=${HOTSPOT_DRIVER:-"-D nl80211,wext"} # leave blank for RPi2, nl80211 for RPi3
-    HOTSPOT_DRIVER=${HOTSPOT_DRIVER:-""} 
     # leave blank for RPi2, nl80211 for RPi3
+    HOTSPOT_DRIVER=${HOTSPOT_DRIVER:-""} 
+    # when calling add these dnsmasq parameters
+    HOTSPOT_DNSMASQ_PARAMS=${HOTSPOT_DNSMASQ_PARAMS:-""}
 
 
 command -v hostapd || echo "### `basename $0`: missing hostapd"
@@ -36,6 +40,7 @@ cat <<EOM
   HOTSPOT_CHANNEL="${HOTSPOT_CHANNEL}"
  HOTSPOT_PASSWORD="${HOTSPOT_PASSWORD}"
 HOTSPOT_FORCEHTTP="${HOTSPOT_FORCEHTTP}"
+HOTSPOT_DNSMASQ_PARAMS="${HOTSPOT_DNSMASQ_PARAMS}"
 EOM
 
 ip addr add ${HOTSPOT_IP}/24 dev ${HOTSPOT_DEV} 
@@ -81,14 +86,16 @@ hostapd -B \
 #
 shopt -s extglob
 NETPREFIX=${HOTSPOT_IP/%.+([0-9])/} # all but last ip octect
+# remove any older ones
+iptables -t nat -F
+iptables -D FORWARD -i ${HOTSPOT_DEV} -s ${NETPREFIX}.0/24 -m conntrack --ctstate NEW -j ACCEPT
+iptables -D FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+sysctl -w net.ipv4.ip_forward=0
 if [ "$HOTSPOT_USENAT" = "1" ]; then
   sysctl -w net.ipv4.ip_forward=1
   iptables -A FORWARD -i ${HOTSPOT_DEV} -s ${NETPREFIX}.0/24 -m conntrack --ctstate NEW -j ACCEPT
   iptables -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
   iptables -t nat -A POSTROUTING  -j MASQUERADE
-  # Force all HTTP to local server always
-  # iptables -t nat -A PREROUTING -p tcp --sport 53 -j DNAT --to-destination 127.0.0.1:53
-  # iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT --to-destination ${MASTERHTTP}:80
 fi
 if [ "$HOTSPOT_FORCEHTTP" = "1" ]; then
   iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination ${HOTSPOT_IP}:80
@@ -109,17 +116,19 @@ fi
 
 ps ax | grep dnsmasq | grep -v grep
 killall dnsmasq && sleep 1
-test "$HOTSPOT_FORCEHTTP" = "1" && FORCE_DNS_PARAM=--address="/#/${HOTSPOT_IP}"
+test "$HOTSPOT_FORCEDNS" = "1" \
+&& FORCE_DNS_PARAM=--address="/#/${HOTSPOT_IP}"
 
 test -e "/home/pi/`basename $0`_dnsmasq.log" && rm "/home/pi/`basename $0`_dnsmasq.log"
+set -x
 dnsmasq \
 --interface=${HOTSPOT_DEV} \
 --dhcp-range=${NETPREFIX}.40,${NETPREFIX}.250,255.255.255.0,24h \
 --dhcp-authoritative \
---no-ping  $FORCE_DNS_PARAM \
+--no-ping  $FORCE_DNS_PARAM  $HOTSPOT_DNSMASQ_PARAMS \
 --log-queries \
 --log-facility=/home/pi/`basename $0`_dnsmasq.log
-
+set +x
 
 #DNSMASQ_OPTS=
 #sed -i -e "s/denyintefaces.*/denyinterfaces $APDEV/" -e 's/^static routers=/#static routers=/' /etc/dhcpcd.conf

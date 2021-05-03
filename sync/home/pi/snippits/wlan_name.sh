@@ -11,13 +11,11 @@
 function set_udev () {
   # turn off systemd style naming:
   ln -nfs /dev/null /etc/systemd/network/99-default.link
-
   test ! -e /etc/udev/rules.d/72-wlan.rules && \
   \
   echo "$usbwlan1only" > /etc/udev/rules.d/72-wlan.rules \
   \
   && udevadm control --reload-rules && udevadm trigger --attr-match=subsystem=net
-
 }
 
 
