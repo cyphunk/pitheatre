@@ -1,0 +1,30 @@
+https://github.com/dhruvvyas90/qemu-rpi-kernel/wiki/Emulating-Jessie-image-with-4.x.xx-kernel/0068f0c21d942b0f331e18014ff8e22c20cada5c
+https://raspberrypi.stackexchange.com/questions/165/emulation-on-a-linux-pc/53991#53991
+
+sudo losetup -f --show -P 2016-09-23-raspbian-jessie.img 
+ls /mnt/
+s mount /dev/loop0p2 /mnt/
+vi /mnt/etc/ld.so.preload 
+s vi /mnt/etc/ld.so.preload 
+vi /mnt/etc/fstab 
+s vi /mnt/etc/fstab 
+s umount /mnt/
+s losetup -d /dev/loop0 
+
+qemu-system-arm \
+  -kernel kernel-qemu-4.4.12-jessie  -cpu arm1176 \
+  -m 256 \
+  -M versatilepb \
+  -no-reboot \
+  -serial stdio \
+  -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" \
+  -hda ./2016-09-23-raspbian-jessie.img
+
+qemu-system-arm \
+  -kernel ./qemu-rpi-kernel/kernel-qemu-4.4.13-jessie  -cpu arm1176 \
+  -m 256 \
+  -M versatilepb \
+  -no-reboot \
+  -serial stdio \
+  -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" \
+  -hda ./2016-09-23-raspbian-jessie.img

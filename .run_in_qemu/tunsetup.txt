@@ -1,0 +1,32 @@
+#https://felipec.wordpress.com/2009/12/27/setting-up-qemu-with-a-nat/
+
+sudo tunctl -u user -t tap0
+sudo ifconfig tap0 192.168.100.1
+urxvt -e "sudo ~user/bin/dhcpserver.sh 192.168.100.1 1"
+
+sudo qemu-system-arm -M versatilepb -cpu arm1136-r2 -m 256 -no-reboot -kernel ./qemu-rpi-kernel/kernel-qemu-4.4.13-jessie -hda /dev/mmcblk0 -append "root=/dev/sda2 rw panic=1 PATH=/bin:/sbin" -net nic -net tap,ifname=tap0,script=no
+
+echo "from inside image run dhclient -i eth0"
+
+
+echo OR
+
+cat <<EOM
+
+cat <<EOF > /tmp/qemu-ifup
+#!/bin/sh
+echo "Bringing up $1 for tap mode..."
+tunctl -u user -t tap0
+ifconfig tap0 192.168.100.1
+sleep 2
+EOF
+
+sudo qemu-system-arm -M versatilepb -cpu arm1136-r2 -m 256 -no-reboot -kernel ./qemu-rpi-kernel/kernel-qemu-4.4.13-jessie -hda /dev/mmcblk0 -append "root=/dev/sda2 rw panic=1 PATH=/bin:/sbin" -net nic -net tap,ifname=tap0,script=/tmp/qemu-ifup
+
+
+
+WITH AN IMAGE instead
+losetup -f -P --show 2016-09-23-raspbian-jessie-lite-Cuckoo.img
+sudo qemu-system-arm -M versatilepb -cpu arm1136-r2 -m 256 -no-reboot -kernel ./qemu-rpi-kernel/kernel-qemu-4.4.13-jessie  -append "root=/dev/sda2 rw panic=1 PATH=/bin:/sbin" -net nic -net tap,ifname=tap0,script=no -hda /dev/loop1
+
+EOM
