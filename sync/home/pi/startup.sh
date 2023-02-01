@@ -46,6 +46,11 @@ fi
 echo "## startup.sh: SSH"
 /etc/init.d/ssh start &
 
+test -e /home/pi/status/ui/server.py \
+&& ( echo "## startup.sh: Status server"
+     ufw allow 8000
+     python /home/pi/status/ui/server.py ) &
+
 # don't wait for network on boot
 test -e /etc/systemd/system/dhcpcd.service.d/wait.conf \
   && rm /etc/systemd/system/dhcpcd.service.d/wait.conf

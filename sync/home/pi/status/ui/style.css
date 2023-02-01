@@ -1,0 +1,44 @@
+.good { background: rgb(162, 230, 162); }
+.bad {  background: rgb(255, 164, 164); }
+a { color: #555 }
+
+.status {
+    border:  1px dotted rgb(145, 144, 144);
+    float:   left;
+    margin:  0.5em;
+}
+.status tbody tr:nth-child(even){
+    background-color: #eee;
+}
+
+/* hide raw data, show on mouse hover over*/
+.data_raw {
+    width:  15em;
+    height: 1.2em;
+    -webkit-mask-image: 
+            linear-gradient(180deg, #000 90%, transparent);
+}
+.data_raw:hover {
+    height: none !important;
+    -webkit-mask-image: none;
+}
+
+/* hover help text */
+.help_text {
+    visibility: hidden;
+    position:absolute;
+    background: #f6f6f6;
+    border: 3px double #ccc;
+    padding: 0.5em;
+    border-radius: 6px;
+}
+
+.help_icon:hover .help_text {
+    visibility: visible;
+    opacity: 1;
+}
+
+#data_fresh {
+    width: 20px;
+    min-height: 20px; 
+}

@@ -1,0 +1,132 @@
+<html>
+<head>
+    <title>Status script UI</title>
+    <script src="script.js"></script>
+    <link rel=stylesheet type=text/css href=style.css>
+</head>
+<body>
+
+<!-- // Simple Examples 
+     // Will send request for status to server and print results to console log
+     // -->
+<!-- 
+<script>
+status_loop(['network.sh'], 5000, console.log);
+</script>
+<script>
+status_loop(['power.sh'], 5000, console.log);
+</script>
+<script>
+status_loop(['serial.sh'], 5000, console.log);
+</script>
+<script>
+status_loop(['system.sh'], 5000, console.log);
+</script> -->
+
+
+<!-- // Server & Data Fresshness status box
+     // on_old_data_or_offline() used to poll if server is up and data is fresh (not old)-->
+<style>
+#data_fresh { padding: 0.3em 0.3em 0 0.5em; }
+</style>
+<div id="data_fresh"><span class=help_icon>&#128712;<span class=help_text>When this box is RED it means the data has not been updated in a while and should not be trusted. Red might also indicate that status server has crashed is offline or it may indicate that the device is off or offline.</span></span></div>
+<script>
+var data_fresh_elem = document.getElementById('data_fresh')
+on_old_data_or_offline(10,function(data_is_old){
+    if (data_is_old)
+    data_fresh_elem.className = 'bad';
+    else
+    data_fresh_elem.className = 'good';
+})
+</script>
+
+
+<!-- // More Complex examples // -->
+<script>
+help_text={}
+
+example_make_status_ui_elem(
+    ['system.sh'],
+    5000,
+    document.body,
+    function(parsed_data,elem){
+        var cells="<tr><th colspan=2>System</th></tr>"
+        Object.keys(parsed_data).forEach(function(key){
+            cells+=`<tr><td>${key.toLowerCase()}</td><td>${parsed_data[key]}</td></tr>`            
+        });
+        var t = document.createElement('table')
+        t.innerHTML = cells
+        elem.prepend(t)
+    }
+)
+
+example_make_status_ui_elem(
+    ['processes.sh', 'init', 'server.py', 'wpa_supplicant'],
+    5000,
+    document.body,
+    function(parsed_data,elem){
+        var cells="<tr><th colspan=2>Processes</th></tr>"
+        Object.keys(parsed_data).forEach(function(key){
+            cells+=`<tr><td>${key.toLowerCase()}</td><td>${parsed_data[key]}</td></tr>`            
+        });
+        var t = document.createElement('table')
+        t.innerHTML = cells
+        elem.prepend(t)
+    }
+)
+
+example_make_status_ui_elem(
+    ['power.sh'],
+    5000,
+    document.body,
+    function(parsed_data,elem){
+        var cells="<tr><th colspan=2>Power</th></tr>"
+        Object.keys(parsed_data).forEach(function(key){
+            cells+=`<tr><td>${key.toLowerCase()}</td><td>${parsed_data[key]}</td></tr>`            
+        });
+        var t = document.createElement('table')
+        t.innerHTML = cells
+        elem.prepend(t)
+    }
+)
+
+
+help_text['NETWORK_ROUTER_PINGTIME'] = 'Time to router. If greater than 50ms investigate wireless network issues: 1) make sure this device close enough to wireless router. 2) Check that more powerful wireless routers are not hogging the wireless spectrium and if in down turn off other wireless routers.'
+help_text['NETWORK_ROUTER'] = 'If this is empty it likely means there are issues connecting to the wireless router.'
+help_text['NETWORK_ROUTER_REACHABLE'] = 'If this is 0 then this device has issues connecting to the router.'
+example_make_status_ui_elem(
+    ['network.sh'],
+    5000,
+    document.body,
+    function(parsed_data,elem){
+        var cells="<tr><th colspan=2>Network</th></tr>"
+        Object.keys(parsed_data).forEach(function(key){
+            // Check for help and create if available
+            var help = ""
+            if (key in help_text)
+                help = ` <span class=help_icon>&#128712;<span class=help_text>${help_text[key]}</span></span>`
+            
+            cells+=`<tr><td>${key.toLowerCase()}${help}</td><td>${parsed_data[key]}</td></tr>`            
+        });
+        var t = document.createElement('table')
+        t.innerHTML = cells
+        elem.prepend(t)
+    }
+)
+
+example_make_status_ui_elem(
+    ['serial.sh'],
+    5000,
+    document.body,
+    function(parsed_data,elem){
+        var cells="<tr><th colspan=2>Serial</th></tr>"
+        Object.keys(parsed_data).forEach(function(key){
+            cells+=`<tr><td>${key.toLowerCase()}</td><td>${parsed_data[key]}</td></tr>`            
+        });
+        var t = document.createElement('table')
+        t.innerHTML = cells
+        elem.prepend(t)
+    }
+)
+</script>
+    

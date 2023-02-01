@@ -1,0 +1,55 @@
+<html>
+<head>
+    <title>Serial monitor</title>
+    <script src="script.js"></script>
+    <link rel=stylesheet type=text/css href=style.css>
+</head>
+<body>
+
+
+
+<!-- // Server & Data Fresshness status box
+     // on_old_data_or_offline() used to poll if server is up and data is fresh (not old)-->
+<style>
+#data_fresh { padding: 0.3em 0.3em 0 0.5em; }
+</style>
+<div id="data_fresh"><span class=help_icon>&#128712;<span class=help_text>When this box is RED it means the data has not been updated in a while and should not be trusted. Red might also indicate that status server has crashed is offline or it may indicate that the device is off or offline.</span></span></div>
+<script>
+var data_fresh_elem = document.getElementById('data_fresh')
+on_old_data_or_offline(20,function(data_is_old){
+    if (data_is_old)
+    data_fresh_elem.className = 'bad';
+    else
+    data_fresh_elem.className = 'good';
+})
+</script>
+
+<h3>Monitoring Serial port for Motors. Stimulate motors</h3>
+<!-- // More Complex examples // -->
+Will monitor for 10 seconds in a loop and show the data sent to serial each cycle.<br>
+
+Total serial data count: <div id=total_count></div><br>
+Raw data:<br>
+<pre id=raw_data></pre>
+<script>
+// keep a log of data
+var count = 0;
+var raw_data = ""
+
+var elem_count = document.getElementById('total_count')
+var elem_data = document.getElementById('raw_data')
+status_loop(['serial.sh','/dev/ttyUSB0', '5'], 
+            1000,
+            function(commandId,parsed_data,elem){
+                if (parsed_data.hasOwnProperty('SERIAL_ACTIVE_CHECK_ACTIVITY_WRITE_COUNT')) {
+                    count += parseInt(parsed_data['SERIAL_ACTIVE_CHECK_ACTIVITY_WRITE_COUNT'])
+                    elem_count.innerHTML = count
+                }
+                if (parsed_data.hasOwnProperty('SERIAL_ACTIVE_CHECK_ACTIVITY_RAW')) {
+                    if (parsed_data['SERIAL_ACTIVE_CHECK_ACTIVITY_RAW'] != "")
+                       elem_data.innerHTML = parsed_data['SERIAL_ACTIVE_CHECK_ACTIVITY_RAW'].replace(/\[pid/g, '\n[pid') + elem_data.innerHTML;
+                }
+            }
+)
+</script>
+    
