@@ -31,3 +31,7 @@ echo "g_serial" | tee -a /etc/modules
 
 # Forward a console over the serial
 systemctl enable getty@ttyGS0.service
+# if doing this instead manuallly (from disk image) then:
+#  cd ./etc/systemd/system/getty.target.wants/; ln -s /lib/systemd/system/getty@.service getty@ttyGS0.service
+#  cd ./etc/systemd/system/getty.target.wants/; ln -s /lib/systemd/system/getty@.service getty@tty1.service
+#  cd ./lib/systemd/system/multi-user.target.wants/; ln -s  ../getty.target getty.target 
