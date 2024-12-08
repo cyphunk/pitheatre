@@ -11,6 +11,7 @@
 function set_udev () {
   # turn off systemd style naming:
   ln -nfs /dev/null /etc/systemd/network/99-default.link
+  # value echoed to 72-wlan.rules is defined below this function
   test ! -e /etc/udev/rules.d/72-wlan.rules && \
   \
   echo "$usbwlan1only" > /etc/udev/rules.d/72-wlan.rules \
