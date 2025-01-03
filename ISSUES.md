@@ -6,3 +6,10 @@ When connecting to older system with the `-vvvv` flag on you may noticed a failu
 )). To resolve add the following as an option when connecting:
 
 ``ssh -o PubkeyAcceptedKeyTypes=+ssh-rsa root@IP``
+
+## Mounting fails due to SD card corruption
+Symptoms:
+- failing to mount SD system
+- Every time connect SD card to read in workstation it shows up in DMESG with ro
+
+Mount image with -o ro,noload

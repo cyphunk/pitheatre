@@ -23,6 +23,7 @@ if [ $# -lt 2 ]; then
 	echo
 	echo "downloaded images:"
 	ls -t *.zip *.xz 2>/dev/null
+	find images 2>/dev/null
 	echo
 	echo "usage: $0 <image.zip|xz> <rdiskpath>"
 	exit
@@ -44,8 +45,12 @@ if [ "$YN" != "n" ]; then
 	else
 		sudo umount $rdisk
 	fi
-	unzip $1 || xz -k -d $1					|| exit
-	image="$(ls -t *.img | head -1)"
+	unzip $1 || xz -k -d $1	|| gzip -d $1	|| exit
+	image="$1"
+	image="${image/.tar.gz}"
+	image="${image/.gz}"
+	image="${image/.xz}"
+	image="${image/.zip}"
 	test -s "$image"		 				|| exit
 	set +x
 	read -p "dd over $image? (ctrl+c for no)"
