@@ -12,4 +12,9 @@ Symptoms:
 - failing to mount SD system
 - Every time connect SD card to read in workstation it shows up in DMESG with ro
 
-Mount image with -o ro,noload
+Backup: Mount image with -o ro,noload
+
+## ext4 bad geometry: block count 7851776 exceeds size of device (7806976 blocks)
+
+fsck /dev/sdc2
+resize2fs /dev/sdc2
