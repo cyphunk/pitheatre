@@ -16,6 +16,7 @@ display_rotate=3
 EOF
 touch $HOME/.lcd_4inchhdmi_setup_completed
 
+# HDMI rotation:
 #display_rotate=0 Normal
 #display_rotate=1 90 degrees
 #display_rotate=2 180 degrees
@@ -23,6 +24,12 @@ touch $HOME/.lcd_4inchhdmi_setup_completed
 #display_rotate=3 270 degrees
 #display_rotate=0x10000 horizontal flip
 #display_rotate=0x20000 vertical flip
+
+# Rotate 180 (for APKLVSR 3.5", not Waveshare 4")
+#dtoverlay=waveshare35a,rotate=270,invertx=1,swapxy=1
+# No rotation:
+#dtoverlay=waveshare35a
+
 
 # that should be enough
 
